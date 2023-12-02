@@ -1,14 +1,15 @@
-import  Express  from 'express';
-import expressHttpProxy from 'express-http-proxy';
-import { urlProduct } from './urls';
-const app = Express();
 
-app.use(Express.json());
+import express from 'express';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 
-const productServe = expressHttpProxy(urlProduct);
+const app = express();
 
-app.get('/api/', (req, res) =>  res.json({message: 'deu bom'}));
-
-app.get('/productTeste', (req, res, next) => productServe(req, res, next));
-
-app.listen(3000, () =>  console.log('listening on port 3000...'));
+app.use('/api', createProxyMiddleware(
+    { 
+        target: 'http://localhost:8080/',
+        pathRewrite: {
+            '/api': ''
+        },
+       
+    }));
+app.listen(3000);
